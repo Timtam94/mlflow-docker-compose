@@ -1,3 +1,11 @@
+#https://github.com/sachua/mlflow-docker-compose
+
+# follow tutorial
+
+# mlflow models serve -m S3://mlflow/0/98bdf6ec158145908af39f86156c347f/artifacts/model -p 1234 -h 0.0.0.0
+
+# curl -X POST -H "Content-Type:application/json; format=pandas-split" --data '{"columns":["alcohol", "chlorides", "citric acid", "density", "fixed acidity", "free sulfur dioxide", "pH", "residual sugar", "sulphates", "total sulfur dioxide", "volatile acidity"],"data":[[12.8, 0.029, 0.48, 0.98, 6.2, 29, 3.33, 1.2, 0.39, 75, 0.66]]}' http://192.168.209.225:1234/invocations
+
 version: '3.7'
 
 services:
@@ -10,6 +18,7 @@ services:
             - "9001:9001"
         command: server /data --console-address ':9001' --address ':9000'
         environment:
+            - TZ=Europe/Berlin
             - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
             - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
         volumes:
@@ -20,6 +29,9 @@ services:
         depends_on:
             - minio
         container_name: mc
+        environment:
+            - TZ=Europe/Berlin
+
         env_file:
             - .env
         entrypoint: >
@@ -39,6 +51,7 @@ services:
         ports:
             - "3306:3306"
         environment:
+            - TZ=Europe/Berlin
             - MYSQL_DATABASE=${MYSQL_DATABASE}
             - MYSQL_USER=${MYSQL_USER}
             - MYSQL_PASSWORD=${MYSQL_PASSWORD}
@@ -57,6 +70,7 @@ services:
         ports:
             - "5000:5000"
         environment:
+            - TZ=Europe/Berlin
             - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
             - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
             - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
